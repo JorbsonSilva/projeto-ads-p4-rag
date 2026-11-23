@@ -1,0 +1,824 @@
+{
+  "versao": 1,
+  "registros": [
+    {
+      "id": "C01",
+      "categoria": "Conta",
+      "pergunta": "Para que serve o Orienta?",
+      "resposta": "O Orienta ajuda alunos a encontrar professores e solicitar mentorias. Os professores podem divulgar as matérias que ensinam e acompanhar as solicitações recebidas.",
+      "evidencia": "Busca, criação e gestão de agendamentos ligadas à API.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/UsuarioController.java",
+          "simbolo": "buscarProfessoresAvancado",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/marcar-aula.tsx",
+          "simbolo": "handleConfirmarSolicitacao",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/solicitacoes.tsx",
+          "simbolo": "SolicitacoesScreen",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "categoria": "Conta",
+      "pergunta": "Como crio minha conta?",
+      "resposta": "Preencha o cadastro e confirme seu e-mail com o código de verificação.",
+      "evidencia": "Cadastro e confirmação de e-mail têm operações próprias.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AuthController.java",
+          "simbolo": "iniciarCadastro",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AuthController.java",
+          "simbolo": "verificarEmail",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/cadastro.tsx",
+          "simbolo": "/api/v1/auth/cadastro",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "categoria": "Conta",
+      "pergunta": "Como entro na minha conta?",
+      "resposta": "Use seu e-mail ou CPF e sua senha. O login exige que o e-mail esteja verificado.",
+      "evidencia": "O serviço consulta por e-mail ou CPF e exige confirmação de e-mail.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AuthService.java",
+          "simbolo": "autenticar",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/login.tsx",
+          "simbolo": "emailOrCpf",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "categoria": "Conta",
+      "pergunta": "Posso pedir outro código de verificação?",
+      "resposta": "Sim. Na tela de verificação, use a opção de reenviar o código.",
+      "evidencia": "A tela chama o endpoint de reenvio.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AuthController.java",
+          "simbolo": "reenviarCodigo",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/verificar-email.tsx",
+          "simbolo": "/api/v1/auth/reenviar-codigo",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "categoria": "Conta",
+      "pergunta": "Como altero minha senha estando conectado?",
+      "resposta": "Abra a área de segurança do perfil, informe a senha atual e confirme a nova senha.",
+      "evidencia": "O app envia a senha atual e a nova após validar a confirmação.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/UsuarioController.java",
+          "simbolo": "trocarSenha",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/perfilService.ts",
+          "simbolo": "alterarSenha",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/(tabs)/perfil.tsx",
+          "simbolo": "confirmarNovaSenha",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "categoria": "Perfis",
+      "pergunta": "Posso alternar entre aluno e professor?",
+      "resposta": "Sim. Use o seletor de perfil. O perfil ativo define a área e as ações que o aplicativo apresenta.",
+      "evidencia": "O seletor solicita a troca de papel ativo ao backend.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AuthService.java",
+          "simbolo": "trocarPapel",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "context/AuthContext.tsx",
+          "simbolo": "trocarPerfil",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "categoria": "Perfis",
+      "pergunta": "Posso atualizar meus interesses como aluno?",
+      "resposta": "Sim. Você pode atualizar as matérias de interesse no perfil de aluno.",
+      "evidencia": "O endpoint de atualização grava os interesses.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/PerfilController.java",
+          "simbolo": "atualizarAluno",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/perfilService.ts",
+          "simbolo": "/api/v1/perfil/aluno/",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "categoria": "Perfis",
+      "pergunta": "O que posso configurar no perfil de professor?",
+      "resposta": "Você pode informar as matérias que ensina, cadastrar valores por matéria, definir sua disponibilidade e indicar se oferece atendimento presencial.",
+      "evidencia": "O endpoint grava aptidões, preços, disponibilidade e modalidade presencial.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/PerfilController.java",
+          "simbolo": "atualizarProfessor",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/perfilService.ts",
+          "simbolo": "/api/v1/perfil/professor/",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "categoria": "Perfis",
+      "pergunta": "Onde o professor vê os alunos que já atendeu?",
+      "resposta": "Na área de histórico de alunos, o professor pode consultar os alunos atendidos e abrir o histórico de encontros.",
+      "evidencia": "A tela carrega a listagem de alunos atendidos via API.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/ProfessorController.java",
+          "simbolo": "listarAlunosPorId",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/historicoAlunosService.ts",
+          "simbolo": "obterHistoricoAlunos",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/historico-alunos.tsx",
+          "simbolo": "historicoAulas",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "B01",
+      "categoria": "Busca",
+      "pergunta": "Como encontro um professor?",
+      "resposta": "Na busca de professores, pesquise pelo nome ou pela matéria que quer estudar.",
+      "evidencia": "A busca compara o termo com o nome do professor e com suas matérias.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/UsuarioService.java",
+          "simbolo": "buscarProfessoresAvancado",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/busca-professores.tsx",
+          "simbolo": "nomeProf",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "B02",
+      "categoria": "Busca",
+      "pergunta": "Onde exploro as matérias disponíveis?",
+      "resposta": "Abra “Explorar Disciplinas” para navegar pelas matérias e categorias do catálogo.",
+      "evidencia": "A API oferece catálogo e categorias populares, consultados pelo cliente.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/SaberController.java",
+          "simbolo": "/categorias-populares",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/disciplinasService.ts",
+          "simbolo": "obterCategoriasPopulares",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/explorar-disciplinas.tsx",
+          "simbolo": "Explorar Disciplinas",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "B03",
+      "categoria": "Busca",
+      "pergunta": "Posso filtrar professores por valor?",
+      "resposta": "Sim. A busca permite aplicar um valor máximo para encontrar opções compatíveis com o orçamento. Confira o valor exibido para a matéria escolhida.",
+      "evidencia": "O filtro consulta se há aptidão com preço compatível.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/UsuarioService.java",
+          "simbolo": "buscarProfessoresAvancado",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/busca-professores.tsx",
+          "simbolo": "precoMax",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "B04",
+      "categoria": "Busca",
+      "pergunta": "Posso procurar atendimento presencial na minha região?",
+      "resposta": "Sim. Use a busca presencial. O aplicativo pode usar a região e, quando há coordenadas disponíveis, a proximidade para ajudar a filtrar os resultados.",
+      "evidencia": "A busca presencial aplica filtros de região e distância conforme os dados disponíveis.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/UsuarioService.java",
+          "simbolo": "buscarProfessoresAvancado",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/buscaPresencialService.ts",
+          "simbolo": "obterProfessoresPresenciais",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "B05",
+      "categoria": "Busca",
+      "pergunta": "Onde vejo as matérias e a disponibilidade de um professor?",
+      "resposta": "Abra o perfil do professor a partir do resultado da busca para consultar as matérias e a disponibilidade cadastradas.",
+      "evidencia": "A tela consulta o perfil público com aptidões e disponibilidade.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/UsuarioController.java",
+          "simbolo": "obterPerfilPublicoProfessor",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/professorService.ts",
+          "simbolo": "obterPerfilProfessor",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/professor/[id].tsx",
+          "simbolo": "handleAgendarAula",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "B06",
+      "categoria": "Busca",
+      "pergunta": "Como funciona a recomendação por interesses?",
+      "resposta": "Na consulta de destaques por interesses, o Orienta procura professores que ensinam as matérias do perfil do aluno. Sem interesses ou resultados compatíveis, a consulta usa destaques gerais.",
+      "evidencia": "A rota dedicada tem fallback para destaques gerais. A home inspecionada usa busca geral.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "api",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/UsuarioController.java",
+          "simbolo": "obterProfessoresDestaque",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/UsuarioService.java",
+          "simbolo": "buscarProfessoresDestaquePorAluno",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        }
+      ]
+    },
+    {
+      "id": "M01",
+      "categoria": "Mentorias",
+      "pergunta": "Como solicito uma mentoria?",
+      "resposta": "Com o perfil de aluno, abra o perfil do professor, escolha matéria, dia, horário e modalidade e confirme a solicitação.",
+      "evidencia": "O Expo envia os dados da seleção ao endpoint de agendamentos.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AgendamentoController.java",
+          "simbolo": "criarAgendamento",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/marcar-aula.tsx",
+          "simbolo": "handleConfirmarSolicitacao",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M02",
+      "categoria": "Mentorias",
+      "pergunta": "A mentoria fica confirmada assim que eu solicito?",
+      "resposta": "A solicitação começa pendente e passa a confirmada quando o professor aceita.",
+      "evidencia": "A criação grava PENDENTE e o aceite grava CONFIRMADO.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "agendarAula",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "aceitarAgendamento",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/marcar-aula.tsx",
+          "simbolo": "A solicitação aguarda confirmação do professor.",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M03",
+      "categoria": "Mentorias",
+      "pergunta": "Qual é a antecedência mínima para solicitar uma mentoria?",
+      "resposta": "O horário solicitado precisa estar pelo menos 24 horas à frente do momento da solicitação.",
+      "evidencia": "A criação compara a data solicitada com o momento atual mais 24 horas.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "api",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "agendarAula",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        }
+      ]
+    },
+    {
+      "id": "M04",
+      "categoria": "Mentorias",
+      "pergunta": "Por que um horário pode ser recusado pelo sistema?",
+      "resposta": "A solicitação é bloqueada quando o aluno ou o professor já tem outro agendamento ativo no mesmo dia e horário.",
+      "evidencia": "O servidor verifica conflito de horário em ambas as agendas.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "api",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "agendarAula",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        }
+      ]
+    },
+    {
+      "id": "M05",
+      "categoria": "Mentorias",
+      "pergunta": "Como o professor responde a uma solicitação?",
+      "resposta": "Na área de solicitações, o professor pode aceitar ou recusar pedidos pendentes. A recusa é enviada com uma justificativa.",
+      "evidencia": "O backend permite ação sobre pedidos pendentes e valida a justificativa de recusa.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AgendamentoController.java",
+          "simbolo": "recusarAgendamento",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "aceitarAgendamento",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/solicitacoesService.ts",
+          "simbolo": "recusarSolicitacao",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M06",
+      "categoria": "Mentorias",
+      "pergunta": "Onde acompanho meus agendamentos?",
+      "resposta": "Consulte “Minha Agenda” no perfil ativo. A agenda mostra os agendamentos vinculados a você como aluno ou professor.",
+      "evidencia": "O app consulta a agenda conforme o papel ativo.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AgendamentoController.java",
+          "simbolo": "listarPorAluno",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/AgendamentoController.java",
+          "simbolo": "listarPorProfessor",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/agendaService.ts",
+          "simbolo": "obterAgenda",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M07",
+      "categoria": "Mentorias",
+      "pergunta": "Como remarco uma mentoria?",
+      "resposta": "Use a opção de remarcar na agenda quando ela estiver disponível. O novo horário precisa estar pelo menos 24 horas à frente e passar pela verificação de conflitos dos dois participantes.",
+      "evidencia": "A validação de 24 horas e de conflitos no backend prevalece sobre o aviso genérico de duas horas na interface.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "remarcarAgendamento",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/(tabs)/agenda.tsx",
+          "simbolo": "handleConfirmarRemarcacao",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M08",
+      "categoria": "Mentorias",
+      "pergunta": "Com quanta antecedência um aluno pode cancelar?",
+      "resposta": "O aluno precisa cancelar com pelo menos duas horas de antecedência e informar o motivo.",
+      "evidencia": "A janela de duas horas se aplica ao aluno. O DTO exige justificativa.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AgendamentoService.java",
+          "simbolo": "cancelarAgendamento",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/dto/CancelarAgendamentoDTO.java",
+          "simbolo": "justificativa",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/(tabs)/agenda.tsx",
+          "simbolo": "handleConfirmarDesistencia",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M09",
+      "categoria": "Sessão",
+      "pergunta": "Como é registrada a presença na aula?",
+      "resposta": "Na sala de uma aula confirmada, aluno e professor registram o check-in. A sessão pode entrar em andamento após os dois check-ins.",
+      "evidencia": "O cronômetro chama o check-in e o serviço atualiza o estado da sessão.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AulaService.java",
+          "simbolo": "realizarCheckin",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "components/CronometroAula.tsx",
+          "simbolo": "/checkin",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "M10",
+      "categoria": "Sessão",
+      "pergunta": "Quando o aluno pode avaliar a mentoria?",
+      "resposta": "O aluno vinculado à aula pode avaliar o professor depois que a aula estiver concluída. Cada mentoria aceita uma avaliação desse aluno.",
+      "evidencia": "O servidor exige aula realizada, vínculo do aluno e ausência de avaliação anterior.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/AulaService.java",
+          "simbolo": "avaliarAula",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/avaliacaoService.ts",
+          "simbolo": "enviarAvaliacaoAula",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "H01",
+      "categoria": "Chat",
+      "pergunta": "Com quem posso conversar pelo chat de uma mentoria?",
+      "resposta": "A conversa é vinculada ao agendamento e fica disponível aos participantes, aluno e professor.",
+      "evidencia": "A conversa por agendamento exige vínculo com a mentoria.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/ChatService.java",
+          "simbolo": "obterOuCriarConversa",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/chatService.ts",
+          "simbolo": "obterConversaChat",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "categoria": "Chat",
+      "pergunta": "Posso enviar arquivos ou imagens pelo chat?",
+      "resposta": "O envio no chat atual é de mensagens de texto.",
+      "evidencia": "O cliente rejeita tipos diferentes de TEXTO ou metadados de anexo.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "limitacao",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/chatService.ts",
+          "simbolo": "enviarMensagemChat",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "categoria": "Chat",
+      "pergunta": "Posso enviar mensagem em uma mentoria cancelada ou recusada?",
+      "resposta": "O envio de novas mensagens fica bloqueado nesses dois estados.",
+      "evidencia": "O serviço bloqueia envio quando o agendamento está cancelado ou recusado.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "api",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/ChatService.java",
+          "simbolo": "enviarMensagem",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        }
+      ]
+    },
+    {
+      "id": "N01",
+      "categoria": "Notificações",
+      "pergunta": "Posso marcar minhas notificações como lidas?",
+      "resposta": "Sim. Na central do app, você pode marcar uma notificação individual ou todas como lidas.",
+      "evidencia": "A central chama os endpoints de leitura individual e em lote.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/NotificacaoController.java",
+          "simbolo": "marcarComoLida",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/NotificacaoController.java",
+          "simbolo": "marcarTodasComoLidas",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/notificacoes.tsx",
+          "simbolo": "marcarTodasComoLidas",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "A01",
+      "categoria": "Assistente",
+      "pergunta": "Em que o assistente atual pode me ajudar?",
+      "resposta": "Ele orienta a triagem por disciplina e assunto, oferece respostas guiadas e pode sugerir professores conforme os filtros da triagem.",
+      "evidencia": "O motor implementa etapas de triagem, chips e recomendação.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/orienta/api/assistant/service/DeterministicAssistantService.java",
+          "simbolo": "processStep",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/orienta/api/assistant/service/DeterministicAssistantService.java",
+          "simbolo": "processarPergunta",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/assistente.tsx",
+          "simbolo": "handleSendTextMessage",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "A02",
+      "categoria": "Assistente",
+      "pergunta": "O assistente confirma uma mentoria por mim?",
+      "resposta": "O assistente mostra um card de encaminhamento. Você precisa abrir o perfil indicado e confirmar a solicitação no fluxo de agendamento.",
+      "evidencia": "O card marca confirmação manual e o app navega ao perfil.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/orienta/api/assistant/dto/ActionCardDTO.java",
+          "simbolo": "requiresUserConfirmation",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "app/assistente.tsx",
+          "simbolo": "handleNavigateToBooking",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "components/AssistantSummaryCard.tsx",
+          "simbolo": "onNavigateToBooking",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        }
+      ]
+    },
+    {
+      "id": "A03",
+      "categoria": "Assistente",
+      "pergunta": "O que significa um protocolo mostrado pelo assistente?",
+      "resposta": "Quando a triagem não consegue tratar a mensagem, pode apresentar um rascunho de encaminhamento. Um chamado formal depende de registro pelo suporte.",
+      "evidencia": "O rascunho de triagem é distinto da persistência de um chamado formal.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/orienta/api/assistant/service/DeterministicAssistantService.java",
+          "simbolo": "buildSupportHandoffResponse",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/SuporteService.java",
+          "simbolo": "criarTicket",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        }
+      ]
+    },
+    {
+      "id": "S01",
+      "categoria": "Suporte",
+      "pergunta": "Posso registrar uma denúncia a partir do chat?",
+      "resposta": "O chat oferece uma ação para denunciar uma conduta vinculada à mentoria. Guarde o protocolo quando o aplicativo confirmar o registro.",
+      "evidencia": "O cliente exige protocolo na resposta do endpoint que persiste a denúncia.",
+      "status": "validado_por_inspecao_de_codigo",
+      "escopo_verificacao": "codigo",
+      "fontes": [
+        {
+          "repositorio": "projeto-ads-p4-mobile",
+          "arquivo": "services/chatService.ts",
+          "simbolo": "registrarDenunciaChat",
+          "commit": "989a409784f0f9cdf5d6e66f0f4588953b7a772c"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/controller/SuporteController.java",
+          "simbolo": "criarDenuncia",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        },
+        {
+          "repositorio": "projeto-ads-p4-api",
+          "arquivo": "src/main/java/com/equipe/projetoadsapi/service/SuporteService.java",
+          "simbolo": "criarDenuncia",
+          "commit": "dd9bd538c50853adc5828e9f4f7e8bb3a4e99bc0"
+        }
+      ]
+    }
+  ]
+}

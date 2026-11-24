@@ -93,6 +93,17 @@ class FaqTests(unittest.TestCase):
         self.assertTrue(any(text.startswith("query: ") for text, _ in self.encoder.calls))
         self.assertTrue(all(options["normalize_embeddings"] for _, options in self.encoder.calls))
 
+    def test_passport_service_is_out_of_scope_without_changing_faq_retrieval(self):
+        for question in ("Como emitir passaporte?", "Onde renovo meu passaporte?",
+                         "Como remarco a aula?\nE posso tirar um passaporte?"):
+            with self.subTest(question=question):
+                collection = Mock()
+                retriever = FaqRetriever(collection, max_distance=0.14)
+                self.assertEqual(retriever.retrieve(question), [])
+                collection.query.assert_not_called()
+        self.assertEqual([row.identifier for row in self.retriever.retrieve(
+            "Consigo trocar o horário da mentoria?")], ["M07"])
+
     def test_out_of_scope_and_invented_provider_text(self):
         provider = Mock()
         session = Session(self.retriever, provider, operational_faq=True)

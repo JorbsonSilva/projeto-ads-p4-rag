@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, StringConstraints
 from rag.http_auth import InternalAuth
 from rag.http_modes import MODES, Mode, load_runtime
 from rag.http_sessions import ApiError, Conversations, Limits
+from rag.semantic_embeddings import EmbeddingUnavailable
 from rag.session import ProviderError
 
 PREFIX = "/internal/v1"
@@ -148,6 +149,9 @@ def create_app(*, runtime_loader=load_runtime, conversations=None):
             raise ApiError(504, "PROVIDER_TIMEOUT", "O tutor excedeu o tempo de resposta.", retryable=True) from None
         except ProviderError:
             raise ApiError(503, "PROVIDER_UNAVAILABLE", "O provedor está temporariamente indisponível.",
+                           retryable=True) from None
+        except EmbeddingUnavailable:
+            raise ApiError(503, "MODEL_UNAVAILABLE", "Modelo semântico temporariamente indisponível.",
                            retryable=True) from None
         except ChromaError:
             raise ApiError(503, "INDEX_UNAVAILABLE", "O índice do tutor está indisponível.",

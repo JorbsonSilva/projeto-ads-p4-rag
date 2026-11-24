@@ -227,14 +227,14 @@ class HttpTests(unittest.TestCase):
             self.assertEqual(files, {path: hashlib.sha256(path.read_bytes()).digest()
                                      for path in database.rglob("*") if path.is_file()})
 
-    def test_semantic_mode_reports_model_and_index_errors_without_loading_weights(self):
+    def test_semantic_mode_reports_missing_and_incompatible_index_without_loading_weights(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {"RAG_HTTP_MODE": "semantic_real"}):
             absent = Path(directory) / "absent"
             with patch("rag.index_faq.FAQ_DB", absent), TestClient(create_app()) as client:
                 self.assertEqual(client.get(LIVE, headers=self.headers()).status_code, 200)
                 unavailable = client.get(READY, headers=self.headers())
                 self.assertEqual((unavailable.status_code, unavailable.json()["error"]["code"]),
-                                 (503, "MODEL_UNAVAILABLE"))
+                                 (503, "INDEX_UNAVAILABLE"))
                 self.assertEqual(client.post(CONVERSATIONS, headers=self.headers(), json={}).status_code, 503)
             incompatible = Path(directory) / "incompatible"
             incompatible.mkdir()
@@ -242,3 +242,43 @@ class HttpTests(unittest.TestCase):
                 unavailable = client.get(READY, headers=self.headers())
                 self.assertEqual((unavailable.status_code, unavailable.json()["error"]["code"]),
                                  (503, "INDEX_INCOMPATIBLE"))
+
+    def test_semantic_runtime_uses_retrieved_evidence_and_isolated_history(self):
+        from rag.index_faq import index_faq
+        from rag.semantic_embeddings import SemanticEmbedding
+        from tests.test_faq import FixtureEncoder
+
+        provider = Mock()
+        provider.generate.return_value = '{"id":"M08","resposta":"Consulte o prazo de cancelamento da mentoria."}'
+        with tempfile.TemporaryDirectory() as directory:
+            database = Path(directory) / "index"
+            embedding = SemanticEmbedding(encoder=FixtureEncoder())
+            index_faq(database, embedding=embedding)
+            with (
+                patch.dict(os.environ, {"RAG_HTTP_MODE": "semantic_real", "RAG_MAX_DISTANCE": "0.15"}),
+                patch("rag.index_faq.FAQ_DB", database),
+                patch("rag.semantic_embeddings.configured_embedding", return_value=embedding),
+                patch("rag.providers.load_settings"),
+                patch("rag.providers.make_provider", return_value=provider),
+                TestClient(create_app()) as client,
+            ):
+                self.assertEqual(client.get(READY, headers=self.headers()).json()["mode"], "semantic_real")
+                first, second = self.create(client), self.create(client)
+                initial = self.message(client, first, "Como cancelar uma mentoria?").json()
+                self.assertEqual(initial["mode"], "semantic_real")
+                self.assertEqual(initial["answer"], "Consulte o prazo de cancelamento da mentoria.")
+                self.assertEqual(initial["evidence"][0]["id"], "M08")
+                followup = self.message(client, first, "E qual é o prazo?").json()
+                self.assertEqual(followup["evidence"][0]["id"], "M08")
+                history, = provider.generate.call_args.args
+                self.assertEqual([m.role for m in history], ["system", "user", "assistant", "user"])
+                isolated = self.message(client, second, "E qual é o prazo?").json()
+                self.assertEqual(isolated["outcome"], "no_evidence")
+                self.assertEqual(isolated["evidence"], [])
+                self.assertEqual(provider.generate.call_count, 2)
+                provider.generate.return_value = '{"id":"M07","resposta":"Resposta de outra regra."}'
+                fabricated = self.message(client, first, "Como cancelar uma mentoria?").json()
+                self.assertEqual(fabricated["evidence"], [])
+                provider.generate.side_effect = ProviderTimeout("limite")
+                response = self.message(client, first, "Como cancelar uma mentoria?")
+                self.assertEqual((response.status_code, response.json()["error"]["code"]), (504, "PROVIDER_TIMEOUT"))

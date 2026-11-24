@@ -7,7 +7,7 @@ from pathlib import Path
 import chromadb
 from chromadb.config import Settings
 
-from rag.semantic_embeddings import SemanticEmbedding
+from rag.semantic_embeddings import configured_embedding
 
 ROOT = Path(__file__).resolve().parents[1]
 FAQ_FILE = ROOT / "knowledge" / "orienta_faq.json"
@@ -98,7 +98,7 @@ def _validate(collection, embedding, *, manifest=None, require_ready=True):
 
 
 def index_faq(path=FAQ_DB, faq_file=FAQ_FILE, *, embedding=None):
-    embedding = SemanticEmbedding() if embedding is None else embedding
+    embedding = configured_embedding() if embedding is None else embedding
     version, rows = load_faq(faq_file)
     embedding.ensure_available()
     manifest = _manifest(version, rows, embedding)
@@ -115,7 +115,7 @@ def index_faq(path=FAQ_DB, faq_file=FAQ_FILE, *, embedding=None):
             batch = rows[offset:offset + 8]
             collection.upsert(
                 ids=[row["id"] for row in batch],
-                documents=[f"{row['pergunta']}\n{row['resposta']}" for row in batch],
+                documents=[embedding.document_text(row) for row in batch],
                 metadatas=[{
                     "category": row["categoria"], "answer": row["resposta"],
                     "sources": _canonical(row["fontes"]), "status": row["status"],
@@ -129,7 +129,7 @@ def index_faq(path=FAQ_DB, faq_file=FAQ_FILE, *, embedding=None):
 
 
 def open_faq(path=FAQ_DB, faq_file=FAQ_FILE, *, name=None, embedding=None):
-    embedding = SemanticEmbedding() if embedding is None else embedding
+    embedding = configured_embedding() if embedding is None else embedding
     manifest = None if name is not None else _manifest(*load_faq(faq_file), embedding)
     name = name if name is not None else _name(manifest)
     if not path.is_dir():

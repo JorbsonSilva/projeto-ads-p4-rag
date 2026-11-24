@@ -1,3 +1,4 @@
+import os
 import re
 import shutil
 import unicodedata
@@ -23,9 +24,11 @@ class Runtime:
     provider: Generator
     corpus: str
     version: int
+    generative: bool = False
 
     def session(self, max_turns):
-        return Session(self.retriever, self.provider, operational_faq=True, max_turns=max_turns)
+        return Session(self.retriever, self.provider, operational_faq=True, max_turns=max_turns,
+                       generative=self.generative)
 
 
 class LocalSelector:
@@ -82,19 +85,40 @@ def load_runtime(mode):
         return
 
     if mode == "semantic_real":
-        from rag.index_faq import FAQ_DB, open_faq
+        from dotenv import load_dotenv
 
-        # Valida um índice presente em cópia. O perfil HTTP real ainda fica desativado.
-        if FAQ_DB.exists():
-            try:
-                with TemporaryDirectory(prefix="orienta-http-index-") as directory:
-                    copy = Path(directory) / "chroma"
-                    shutil.copytree(FAQ_DB, copy)
-                    open_faq(copy)
-            except (ChromaError, OSError, ValueError, RuntimeError) as error:
-                raise ApiError(503, "INDEX_INCOMPATIBLE", "O índice do tutor está indisponível ou incompatível.",
-                               retryable=True) from error
-        raise ApiError(503, "MODEL_UNAVAILABLE", "O tutor está temporariamente indisponível.", retryable=True)
+        from rag.faq_retrieval import FaqRetriever
+        from rag.index_faq import FAQ_DB, ROOT, load_faq, open_faq
+        from rag.providers import load_settings, make_provider
+        from rag.semantic_embeddings import configured_embedding
+
+        load_dotenv(ROOT / ".env")
+        if not FAQ_DB.is_dir():
+            raise ApiError(503, "INDEX_UNAVAILABLE", "Indexe a FAQ antes de iniciar o Tutor.", retryable=True)
+        try:
+            embedding = configured_embedding()
+            collection = open_faq(FAQ_DB, embedding=embedding)
+            version, _ = load_faq()
+            retriever = FaqRetriever(collection, max_distance=float(os.environ["RAG_MAX_DISTANCE"]))
+        except (ChromaError, OSError, KeyError, ValueError, RuntimeError):
+            raise ApiError(503, "INDEX_INCOMPATIBLE",
+                           "Verifique o índice, o perfil de embeddings e RAG_MAX_DISTANCE.",
+                           retryable=True) from None
+        try:
+            embedding.ensure_available()
+        except RuntimeError:
+            raise ApiError(503, "MODEL_UNAVAILABLE", "Modelo semântico local indisponível.",
+                           retryable=True) from None
+        try:
+            provider = make_provider(load_settings(), structured=True)
+        except Exception:
+            raise ApiError(503, "PROVIDER_UNAVAILABLE", "Configure o provedor de geração.",
+                           retryable=True) from None
+        try:
+            yield Runtime(retriever, provider, "orienta_faq", version, generative=True)
+        finally:
+            provider.client.close()
+        return
 
     if not (DEMO_DB / "chroma.sqlite3").is_file():
         raise ApiError(503, "INDEX_UNAVAILABLE", "A coleção demonstrativa está indisponível.", retryable=True)

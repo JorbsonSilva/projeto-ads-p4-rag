@@ -15,6 +15,9 @@ def main(argv=None):
     parser.add_argument("--retrieve-only", metavar="PERGUNTA", help="Consulte a FAQ local sem provedor")
     parser.add_argument("--allow-api", action="store_true", help="Autoriza envio de texto ao provedor selecionado")
     args = parser.parse_args(argv)
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
     operational = args.corpus == "orienta"
     if not operational and (args.collection or args.max_distance is not None or args.retrieve_only is not None):
         parser.error("Essas opções exigem --corpus orienta.")
@@ -40,13 +43,11 @@ def main(argv=None):
             parser.exit(2, f"Falha ao abrir ou consultar a FAQ: {error}\n")
 
     try:
-        from dotenv import load_dotenv
-
-        load_dotenv(Path(__file__).resolve().parents[1] / ".env")
         settings = load_settings(selected=args.provider)
         if not operational:
             retriever = ChromaRetriever(demo_collection())
-        session = Session(retriever, make_provider(settings), operational_faq=operational)
+        session = Session(retriever, make_provider(settings, structured=operational),
+                          operational_faq=operational, generative=operational)
     except ConfigurationError as error:
         parser.exit(2, f"{error}\n")
     except Exception:

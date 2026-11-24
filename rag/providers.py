@@ -36,6 +36,7 @@ def load_settings(environ=None, selected=None):
 class OpenAIProvider:
     client: object
     model: str
+    structured: bool = False
 
     def generate(self, messages: tuple[Message, ...]) -> str:
         from openai import APITimeoutError
@@ -44,6 +45,7 @@ class OpenAIProvider:
             result = self.client.chat.completions.create(
                 model=self.model, temperature=0, store=False,
                 messages=[{"role": message.role, "content": message.content} for message in messages],
+                **({"response_format": {"type": "json_object"}} if self.structured else {}),
             )
             return result.choices[0].message.content or ""
         except (APITimeoutError, TimeoutError):
@@ -56,6 +58,7 @@ class OpenAIProvider:
 class GeminiProvider:
     client: object
     model: str
+    structured: bool = False
 
     def generate(self, messages: tuple[Message, ...]) -> str:
         from httpx import TimeoutException
@@ -67,9 +70,12 @@ class GeminiProvider:
             for message in messages if message.role != "system"
         ]
         system = "\n\n".join(message.content for message in messages if message.role == "system")
+        config = {"system_instruction": system}
+        if self.structured:
+            config.update(response_mime_type="application/json", temperature=0)
         try:
             result = self.client.models.generate_content(
-                model=self.model, contents=contents, config={"system_instruction": system}
+                model=self.model, contents=contents, config=config
             )
             return result.text or ""
         except (TimeoutException, TimeoutExceptionV2, TimeoutError):
@@ -78,16 +84,16 @@ class GeminiProvider:
             raise ProviderError("Falha na geração com Gemini.") from None
 
 
-def make_provider(settings: ProviderSettings):
+def make_provider(settings: ProviderSettings, *, structured=False):
     if settings.provider == "gemini":
         from google import genai
 
         client = genai.Client(
             api_key=settings.key, vertexai=False, http_options={"timeout": 30_000}
         )
-        return GeminiProvider(client, settings.model)
+        return GeminiProvider(client, settings.model, structured)
 
     from openai import OpenAI
 
     client = OpenAI(api_key=settings.key, timeout=30, max_retries=0)
-    return OpenAIProvider(client, settings.model)
+    return OpenAIProvider(client, settings.model, structured)

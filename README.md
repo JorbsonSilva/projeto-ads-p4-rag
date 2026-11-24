@@ -1,56 +1,27 @@
-# Orienta RAG · protótipo acadêmico
+# Tutor Orienta · RAG acadêmico
 
-Protótipo de terminal independente dos repositórios Java e Expo. O modo demonstrativo contém três trechos fictícios. O modo Orienta usa uma FAQ operacional separada. O código de indexação e a coleção original do professor seguem sem identificação.
+Projeto da disciplina de Machine Learning que aplica recuperação aumentada por geração (RAG) a dúvidas operacionais do Orienta. O Tutor explica como usar o aplicativo e fundamenta a resposta em registros da FAQ. Triagem, recomendações e agendamentos continuam no assistente determinístico e nas telas próprias do Orienta.
 
-## Execução
+## Arquitetura
 
-Use Python 3.12 e um ambiente virtual, a partir deste diretório.
+| Componente | Branch | Papel |
+|---|---|---|
+| [Expo Web](https://github.com/JorbsonSilva/projeto-ads-p4-mobile/tree/feature/orienta-rag) | `feature/orienta-rag` | Login do aluno, interface do Tutor, origem da resposta e evidências |
+| [Spring Boot](https://github.com/JorbsonSilva/projeto-ads-p4-api/tree/feature/orienta-rag) | `feature/orienta-rag` | API pública autenticada e emissão de JWT interno de curta duração |
+| [Python RAG](https://github.com/JorbsonSilva/projeto-ads-p4-rag/tree/main) | `main` | FastAPI privada, memória por sessão, embeddings, ChromaDB persistente e geração |
 
-No workspace, a pasta do projeto é `projeto-ads-p4-rag`. Para o teste de JWT
-Java → Python executado a partir de `projeto-ads-p4-api`, informe o caminho
-ao backend por `ORIENTA_RAG_TEST_PROJECT` e selecione um Python com PyJWT por
-`ORIENTA_RAG_TEST_PYTHON`.
+O Expo envia o token do aplicativo somente ao Spring. O Spring identifica o usuário e assina uma credencial interna para o FastAPI. O FastAPI consulta o ChromaDB e envia ao Gemini apenas o histórico e os candidatos do turno. O resultado volta ao Expo com o texto e os IDs das evidências, passando pelo Spring.
+
+## Preparação
+
+Clone os três projetos lado a lado e selecione as branches da tabela. No Python RAG, use Python 3.12 e um ambiente virtual.
 
 ```sh
-export ORIENTA_RAG_TEST_PROJECT="$(cd ../projeto-ads-p4-rag && pwd)"
-```
-
-```sh
-python3 -m venv .venv
+python3.12 -m venv .venv
 . .venv/bin/activate
-python -m pip install -r requirements-http.txt
-python -m examples.seed_demo
-python -m unittest discover -s tests -v
 ```
 
-A carga usa upsert com IDs fixos em `data/chroma`. A suíte completa inclui a API e requer `requirements-http.txt`. Para usar apenas a CLI, as dependências de `requirements.txt` são suficientes. Os testes usam diretório temporário para o Chroma e simulam os provedores.
-
-Para uma sessão online autorizada, copie `.env.example` para `.env` e preencha somente a chave necessária. Confira a elegibilidade e as condições de cobrança no projeto do provedor antes de executar com `--allow-api`. Use apenas perguntas fictícias.
-
-```sh
-python -m rag.cli --allow-api
-python -m rag.cli --provider openai --allow-api
-```
-
-Gemini é o padrão. `--provider` tem precedência sobre `RAG_PROVIDER`. `GEMINI_MODEL` tem padrão `gemini-3.1-flash-lite` e `OPENAI_MODEL` tem padrão `gpt-4o-mini`. A tabela do Google descreve a modalidade gratuita para Flash-Lite. A elegibilidade depende do projeto e da região. [Preços da API Gemini](https://ai.google.dev/gemini-api/docs/pricing#gemini-3.1-flash-lite)
-
-Pergunte “Reserva do Observatório Aurora” e depois “E quando?”. Para exercitar a resposta local sem evidência, pergunte “Xilofone submarino”.
-
-## Fluxo
-
-1. O terminal abre uma sessão em memória, com uma única mensagem `system`.
-2. `ChromaRetriever` consulta `faq_colecao` com `query_texts=[pergunta]` e `n_results=2`. A demonstração descarta candidatos com distância cosseno acima de 0,72. Para um follow-up iniciado por “E” com busca vazia, tenta também a última consulta que encontrou evidência junto da pergunta atual.
-3. `Session` entrega o histórico e a pergunta atual enriquecida com os trechos ao provedor escolhido. Se a busca ficar sem contexto, devolve uma mensagem local e registra o turno. Se o provedor falhar, o turno fica disponível para reenvio sem acúmulo de mensagens.
-4. O histórico guarda pares com pergunta original e resposta, em ordem. Os trechos recuperados são adicionados apenas à chamada corrente. `/sair` encerra a sessão e descarta a memória.
-
-O adaptador OpenAI usa `chat.completions.create()`, com `temperature=0` e papéis `system`, `user` e `assistant`. O Gemini recebe a instrução de sistema em `system_instruction` e mapeia `assistant` para `model`. As escolhas de provedor não afetam a recuperação ou a memória. [OpenAI Chat Completions](https://developers.openai.com/api/reference/python/resources/chat/subresources/completions/methods/create) · [Geração de texto Gemini](https://ai.google.dev/gemini-api/docs/text-generation) · [Consultas Chroma](https://docs.trychroma.com/docs/querying-collections/query-and-get)
-
-## Diferenças em relação ao exemplo da aula
-
-- O núcleo preserva o cliente persistente, a coleção, a recuperação antes da geração e o formato de histórico da aula.
-- A demonstração usa hashing lexical local, o mesmo na indexação e na consulta. Isso permite executar a recuperação sem baixar pesos. O método depende de sobreposição de termos e tem cobertura limitada de sinônimos. O limiar de distância serve ao corpus fictício e ainda precisaria ser avaliado em um corpus maior.
-- `sentence-transformers` e `pypdf` ficam para a avaliação do material original. Este corpus usa texto escrito diretamente e um embedding demonstrativo. O modelo, os PDFs e o pipeline da aula seguem pendentes de confirmação.
-- O protótipo acrescenta Gemini, um filtro de relevância, tratamento de falhas e testes. O histórico cresce durante a sessão. A janela de contexto e limites de consumo devem ser definidos antes de uso prolongado ou integração.
+Para o piloto, siga a instalação ONNX abaixo. O modo simulado pode usar `requirements-http.txt`. Para reproduzir a coleção fictícia em outro ambiente, execute `python -m examples.seed_demo`. A coleção operacional tem um diretório próprio.
 
 ## FAQ operacional do Orienta
 
@@ -62,28 +33,32 @@ O chatbot tem um modo de conhecimento operacional sobre o aplicativo, com instru
 
 `rag/index_faq.py` valida o formato e a unicidade dos IDs e grava pergunta e resposta em um documento por registro. A base operacional fica em `data/chroma_orienta`. O nome da coleção é derivado da versão e do hash do manifesto. O manifesto inclui o hash do corpus, a métrica, o perfil de embeddings e o número de registros. Lotes são gravados por upsert com IDs estáveis. A coleção só fica disponível após a indexação terminar. Uma alteração no JSON gera outra coleção. Guarde junto dos dados o nome da versão anterior para reabri-la via `--collection`. A operação padrão seleciona a coleção correspondente ao JSON atual. A abertura verifica manifesto, configuração do encoder, dimensão e contagem.
 
-A recuperação consulta até dois candidatos no Chroma com `query_texts=[pergunta]` e filtra pela distância cosseno configurada. O provedor recebe somente os candidatos atuais e o histórico da sessão. Ele seleciona um ID ou indica evidência insuficiente. O terminal mostra a resposta canônica e seu ID de fonte. Texto livre e IDs fora dos candidatos são descartados. Sem candidatos, a resposta sai localmente. Esse desenho restringe o texto exibido ao corpus, mas a seleção de um ID incorreto ainda é possível.
+A recuperação usa `query_texts` com `n_results=2` e filtra pela distância cosseno. O provedor recebe o histórico `system`, `user` e `assistant` e a pergunta atual com os candidatos. O system prompt define a persona do Tutor, pede português brasileiro e limita a resposta aos trechos recuperados. O provedor devolve um JSON com `id` e `resposta`. O serviço só publica evidências de IDs recuperados. Quando faltam candidatos ou o modelo se abstém, a resposta é local. O prompt limita o uso do histórico à interpretação da pergunta. A checagem do ID valida a proveniência, mas a fidelidade do texto gerado precisa ser avaliada.
 
-### Modelo e preparo local
+### Modelo e execução
 
-O adaptador usa `intfloat/multilingual-e5-small` na revisão [`7cf867cae19b6df205046e9c11907797649fb552`](https://huggingface.co/intfloat/multilingual-e5-small/commit/7cf867cae19b6df205046e9c11907797649fb552). O modelo produz 384 dimensões, com normalização L2 e distância cosseno. A mesma configuração atende ao índice e à consulta. Os prefixos são `passage: ` para documentos e `query: ` para perguntas. O carregamento é local, em CPU, com Safetensors e lotes de quatro textos. [Ficha do modelo](https://huggingface.co/intfloat/multilingual-e5-small)
+O perfil padrão `sentence_transformers` usa `intfloat/multilingual-e5-small` na revisão `7cf867cae19b6df205046e9c11907797649fb552`. Instale `requirements-semantic.txt` e disponibilize essa revisão no cache local para usar esse perfil. O perfil `onnx`, validado no Celeron N4500, usa o mesmo E5 convertido para uint8, em CPU com uma thread. Ambos usam 384 dimensões, prefixos `query: ` e `passage: ` e normalização L2. O perfil ONNX usa média com máscara de atenção e inclui a categoria junto à pergunta e resposta indexadas. Os manifestos mantêm os índices separados. [Modelo original](https://huggingface.co/intfloat/multilingual-e5-small) · [Artefatos ONNX](https://huggingface.co/Xenova/multilingual-e5-small/tree/761b726dd34fb83930e26aab4e9ac3899aa1fa78)
 
-O E5 foi escolhido por seu treinamento voltado à recuperação multilíngue e pelos prefixos específicos de consulta e passagem. Os pesos Safetensors ocupam cerca de 471 MB, além do tokenizer e das dependências. A máquina auditada tem Celeron N4500 com dois núcleos, 3,6 GiB de RAM total e cerca de 694 MiB disponíveis no momento da medição, com 84 GiB de armazenamento livre. O espaço em disco é suficiente para o artefato, enquanto a memória disponível e o uso de swap são restrições para a execução. Meça tempo e pico de RAM após obter os pesos. [Arquivo de pesos](https://huggingface.co/intfloat/multilingual-e5-small/blob/main/model.safetensors)
-
-Após autorização para transferir as dependências e os pesos, instale `requirements-semantic.txt` em um ambiente virtual Linux x86-64 e disponibilize **essa revisão** no cache Hugging Face. O carregamento usa `local_files_only=True`. A máquina desta missão estava sem o checkpoint e sem o runtime semântico. As versões propostas para esse runtime ainda precisam de validação local.
-
-### Indexação e consulta
-
-Quando o cache e o ambiente estiverem prontos, execute estes comandos a partir do diretório do protótipo.
+Para o perfil leve, use um ambiente virtual Python 3.12, `requirements-onnx.txt` e só os dois artefatos abaixo (135,1 MB).
 
 ```sh
+python -m pip install -r requirements-onnx.txt
+revision=761b726dd34fb83930e26aab4e9ac3899aa1fa78
+base=https://huggingface.co/Xenova/multilingual-e5-small/resolve/$revision
+mkdir -p models/e5-onnx
+curl -fL "$base/tokenizer.json" -o models/e5-onnx/tokenizer.json
+curl -fL "$base/onnx/model_uint8.onnx" -o models/e5-onnx/model_uint8.onnx
+export RAG_EMBEDDING_BACKEND=onnx RAG_MAX_DISTANCE=0.14
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
 python -m rag.index_faq
-python -m rag.cli --corpus orienta --max-distance 2 --retrieve-only "Consigo trocar o horário da mentoria?"
+python -m rag.cli --corpus orienta --max-distance 0.14 --retrieve-only "Consigo trocar o horário da mentoria?"
 ```
 
-A consulta local acima usa distância máxima 2 apenas para inspecionar os dois candidatos durante a avaliação. Calibre o limiar com perguntas válidas, ambíguas e fora de escopo antes de usá-lo no modo interativo. A CLI exige informar o limiar explicitamente.
+O limiar 0,14 é inicial para este índice ONNX. A distância sozinha pode aproximar assuntos externos ao Orienta. Pedidos de emissão ou renovação de passaporte são descartados antes da recuperação. Outros casos próximos do limiar ainda dependem da abstenção do provedor. Para inspecionar os dois candidatos sem filtro de distância, use `--max-distance 2`.
 
-Para uso online autorizado, configure `GEMINI_API_KEY` ou `OPENAI_API_KEY` conforme a seção inicial. Para Gemini, mantenha `RAG_PROVIDER=gemini` ou informe `--provider gemini`. Para OpenAI, use `--provider openai`. No comando interativo, substitua `--retrieve-only PERGUNTA` por `--allow-api` e use o limiar calibrado. `/sair` descarta a memória. A opção `--retrieve-only` funciona sem chave ou provedor.
+Para geração real, copie `.env.example` para `.env` local, ignorado pelo Git. O serviço carrega esse arquivo com `python-dotenv`. Configure `GEMINI_API_KEY` (padrão) ou `OPENAI_API_KEY` no ambiente ou `.env`. Selecione o modelo com `GEMINI_MODEL` ou `OPENAI_MODEL` e substitua `--retrieve-only PERGUNTA` por `--allow-api`. `/sair` descarta a memória. O piloto validou Gemini `gemini-3.1-flash-lite`.
+
+No teste HTTP real, “Como faço para cancelar uma mentoria?” retornou o prazo de duas horas e a exigência de informar o motivo, com evidência `M08`. “E qual é o prazo?” manteve `M08` na mesma sessão e retornou ausência de evidência em uma sessão nova. A remarcação retornou `M07`, com antecedência de 24 horas para o novo horário e verificação de conflitos. Clima e emissão de passaporte retornaram ausência de evidência.
 
 ### Testes e diferenças em relação à aula
 
@@ -92,9 +67,9 @@ python -m unittest discover -s tests -v
 HF_HUB_OFFLINE=1 python -m unittest discover -s tests -p 'model_faq.py' -v
 ```
 
-O primeiro comando preserva os 14 testes da demonstração e executa testes da FAQ com Chroma real em armazenamento temporário, encoder simulado e APIs simuladas. O segundo exercita o ranking com o modelo real e exige o checkpoint já disponível, sem chamadas a Gemini ou OpenAI. A suíte simulada valida a integração e os casos previstos, sem medir qualidade semântica do E5.
+Na entrega, os **34 testes Python** da primeira linha passaram. Eles incluem Chroma real em armazenamento temporário, encoders de teste e provedores simulados. A segunda linha é opcional e usa o checkpoint local do perfil Sentence Transformers. A validação com ONNX e Gemini reais foi realizada separadamente, pela API e pelo Expo Web.
 
-A adaptação mantém Chroma persistente, dois resultados iniciais, recuperação antes da geração e os papéis da conversa. O modo Orienta acrescenta FAQ JSON com proveniência, encoder local em português, manifesto e seleção de uma resposta canônica. O exemplo de FAQ em PDF da aula serve como referência de estrutura. `pypdf` não é necessário para o corpus JSON.
+A adaptação mantém Chroma persistente, dois resultados iniciais, recuperação antes da geração e os papéis da conversa. O modo Orienta acrescenta FAQ JSON com proveniência, encoder local em português, manifesto e validação das evidências retornadas. O exemplo de FAQ em PDF da aula serve como referência de estrutura. `pypdf` não é necessário para o corpus JSON.
 
 ## API HTTP interna
 
@@ -107,7 +82,7 @@ Use Python 3.12 e um ambiente virtual. A API local usa loopback, um worker e doc
 ```sh
 python -m pip install -r requirements-http.txt
 export RAG_INTERNAL_JWT_SECRET="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
-export RAG_HTTP_MODE=simulated
+export RAG_HTTP_MODE=semantic_real RAG_EMBEDDING_BACKEND=onnx RAG_MAX_DISTANCE=0.14
 python -m uvicorn rag.http_api:create_app --factory --host 127.0.0.1 --port 8000 --workers 1
 ```
 
@@ -132,7 +107,7 @@ Cada rota, inclusive saúde, exige `Authorization: Bearer <credencial-interna>`.
 | `GET /health/live` | Retorna `200` se o processo responde. |
 | `GET /health/ready` | Retorna `200` com o modo pronto ou `503` com o motivo da indisponibilidade. |
 
-A resposta `answered` inclui o texto canônico e uma evidência com `id`, `corpus` e `corpusVersion`. `no_evidence` devolve uma orientação local com lista vazia. O contrato de erro é `{"error":{"code":"...","message":"...","retryable":false}}`. Credencial inválida retorna `401`, escopo insuficiente `403`, conversa inexistente, expirada ou de outro sujeito `404`, conflito ou turno em andamento `409`, entrada inválida `422`, limites `429`, recurso indisponível `503` e timeout do provedor `504`.
+A resposta `answered` inclui o texto da resposta e uma evidência com `id`, `corpus` e `corpusVersion`. `no_evidence` devolve uma orientação local com lista vazia. O contrato de erro é `{"error":{"code":"...","message":"...","retryable":false}}`. Credencial inválida retorna `401`, escopo insuficiente `403`, conversa inexistente, expirada ou de outro sujeito `404`, conflito ou turno em andamento `409`, entrada inválida `422`, limites `429`, recurso indisponível `503` e timeout do provedor `504`.
 
 Exemplo com duas janelas de terminal. Na janela do cliente, disponibilize o mesmo segredo de desenvolvimento e execute os comandos a partir do projeto. Use outro token quando os 60 segundos expirarem.
 
@@ -168,10 +143,31 @@ A memória é volátil. O servidor gera a conversa e a vincula ao sujeito autent
 
 - `demonstrative` usa uma cópia temporária do Chroma fictício existente e seleciona a primeira evidência recuperada. Se ainda não houver um índice demonstrativo em um ambiente novo, use a rotina de carga da seção inicial.
 - `simulated` usa a FAQ Orienta e um recuperador de perguntas normalizadas e exemplos fixos, sem provedor externo. Execute-o em desenvolvimento ou homologação. **Esse modo não comprova a qualidade da recuperação semântica.**
-- `semantic_real` está preparado como modo indisponível nesta entrega. Se existir um índice, valida uma cópia contra o manifesto. Um manifesto incompatível produz `INDEX_INCOMPATIBLE`. Sem essa falha, retorna `MODEL_UNAVAILABLE`. A inicialização e as rotas de saúde não carregam pesos ou chamam provedores.
+- `semantic_real` abre o índice operacional persistente e usa o perfil definido por `RAG_EMBEDDING_BACKEND`, o limiar obrigatório `RAG_MAX_DISTANCE` e um provedor configurado. A inicialização carrega o encoder antes de indicar prontidão. Configure o segredo JWT interno no ambiente e execute o comando Uvicorn acima com `RAG_HTTP_MODE=semantic_real`. O modo devolve `503` se índice, modelo ou provedor estiverem indisponíveis e não muda para o modo simulado. O Spring mapeia `semantic_real` para `RAG`. Para o piloto, use `ORIENTA_RAG_RESPONSE_TIMEOUT=10s` no Spring e mantenha o prazo local de 12 s do Expo. A geração real ultrapassou o padrão de 3 s do Spring; os prazos do piloto devem ser reavaliados se a latência do provedor variar.
 
 ```sh
 HF_HUB_OFFLINE=1 python -m unittest discover -s tests -v
 ```
 
-A suíte usa FastAPI TestClient, bases demonstrativas temporárias e provedores locais ou simulados. A suíte opcional de pesos reais fica separada. A integração com o Spring deve definir a rota autenticada, a emissão da credencial interna, a contingência determinística e os prazos entre serviços. O armazenamento em memória pressupõe um único worker. Múltiplas réplicas exigem armazenamento compartilhado e coordenação de turnos.
+A suíte usa FastAPI TestClient, bases demonstrativas temporárias e provedores locais ou simulados. A suíte opcional de pesos reais fica separada. O armazenamento em memória pressupõe um único worker. Múltiplas réplicas exigem armazenamento compartilhado e coordenação de turnos.
+
+### Piloto integrado no Expo Web
+
+Use JDK 17, Node.js compatível com Expo SDK 54 (Node 22 no piloto) e um PostgreSQL de teste isolado com dados sintéticos. Execute `npm ci` no frontend e configure `DB_URL`, `DB_USER` e `DB_PASSWORD` no processo Spring. No Python, exporte `RAG_INTERNAL_JWT_SECRET` e inicie o Uvicorn em `semantic_real` conforme acima. No Spring, use `ORIENTA_RAG_ENABLED=true`, `ORIENTA_RAG_BASE_URL=http://127.0.0.1:8000`, `ORIENTA_RAG_INTERNAL_SECRET` igual ao segredo do Python e um `ORIENTA_RAG_SUBJECT_SECRET` distinto. Abra o Expo Web em `http://localhost:8081`, origem aceita pelo `CorsConfig` atual do Spring. A origem `http://127.0.0.1:8081` é distinta para CORS.
+
+```sh
+# No backend, após configurar o banco de teste e os segredos no processo.
+ORIENTA_RAG_ENABLED=true ORIENTA_RAG_BASE_URL=http://127.0.0.1:8000 \
+  ORIENTA_RAG_RESPONSE_TIMEOUT=10s ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+
+# No frontend, sem herdar segredos do Spring ou Python.
+EXPO_PUBLIC_TUTOR_ENABLED=true EXPO_PUBLIC_API_URL=http://localhost:8080 \
+  ./node_modules/.bin/expo start --web --offline --max-workers 1
+```
+
+Entre com uma conta sintética de aluno do seed `dev`, descrito no README do backend, e abra **Dúvidas sobre o Orienta**. O Tutor mostra respostas reais como **Base de conhecimento**, origem `RAG` no contrato público. O histórico é volátil e fica restrito à conversa. Em máquinas com pouca RAM, prefira exportar o bundle Web antes de iniciar os serviços e confirme a memória disponível em cada etapa.
+
+
+Na demonstração completa no Chrome, o login de aluno, a abertura pelo atalho, a resposta com evidência, a continuidade e o encerramento passaram. O cancelamento levou 8,61 s e a continuação, 4,06 s no aplicativo. Pedir emissão de passaporte retornou ausência de evidência em 0,36 s. A triagem determinística também respondeu com HTTP 200. Os 10 s do Spring foram uma configuração temporária do piloto.
+
+O corpus cobre apenas a FAQ operacional existente. O filtro de relevância é heurístico e o ID validado comprova a origem do candidato, sem garantir por si só a fidelidade de cada frase. A latência depende da máquina, rede e provedor. A demonstração integrada foi feita no Expo Web. Para a apresentação, veja [DEMONSTRACAO.md](DEMONSTRACAO.md).
